@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: ehr_app
+    environment:
+      - DATABASE_HOST=pgvector
+      - DATABASE_PORT=5432
+      - DATABASE_USER=ai
+      - DATABASE_PASSWORD=ai
+      - DATABASE_NAME=ai
+    depends_on:
+      - pgvector
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command:
+      - uvicorn
+      - main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --reload
+
+  pgvector:
+    image: phidata/pgvector:16
+    container_name: pgvector
+    environment:
+      - POSTGRES_DB=ai
+      - POSTGRES_USER=ai
+      - POSTGRES_PASSWORD=ai
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - pgvolume:/var/lib/postgresql/data
+    ports:
+      - "5532:5432"
+
+volumes:
+  pgvolume:
